@@ -65,19 +65,21 @@ public class SuggestionDialogFragment extends DialogFragmentBugfixed {
                         suggestionSubscriptionUpdated(model);
                     }
                 };
-                if (suggestion.isSubscribed()) {
-                    suggestion.unsubscribe(getActivity(), callback);
-                } else {
-                    if (Session.getInstance().getEmail(getActivity()) != null) {
-                        SigninManager.signinForSubscribe(getActivity(), Session.getInstance().getEmail(getActivity()), new SigninCallback() {
-                            @Override
-                            public void onSuccess() {
-                                suggestion.subscribe(getActivity(), callback);
-                            }
-                        });
+                if (suggestion != null){
+                    if (suggestion.isSubscribed()) {
+                        suggestion.unsubscribe(getActivity(), callback);
                     } else {
-                        SubscribeDialogFragment dialog = new SubscribeDialogFragment(suggestion, SuggestionDialogFragment.this, deflectingType);
-                        dialog.show(getFragmentManager(), "SubscribeDialogFragment");
+                        if (Session.getInstance().getEmail(getActivity()) != null) {
+                            SigninManager.signinForSubscribe(getActivity(), Session.getInstance().getEmail(getActivity()), new SigninCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    suggestion.subscribe(getActivity(), callback);
+                                }
+                            });
+                        } else {
+                            SubscribeDialogFragment dialog = new SubscribeDialogFragment(suggestion, SuggestionDialogFragment.this, deflectingType);
+                            dialog.show(getFragmentManager(), "SubscribeDialogFragment");
+                        }
                     }
                 }
             }
@@ -98,7 +100,9 @@ public class SuggestionDialogFragment extends DialogFragmentBugfixed {
         listView.setOnScrollListener(new PaginationScrollListener(adapter));
         builder.setView(view);
         builder.setNegativeButton(R.string.uv_close, null);
-        Babayaga.track(getActivity(), Babayaga.Event.VIEW_IDEA, suggestion.getId());
+        if (suggestion != null) {
+            Babayaga.track(getActivity(), Babayaga.Event.VIEW_IDEA, suggestion.getId());
+        }
         return builder.create();
     }
 
@@ -122,7 +126,7 @@ public class SuggestionDialogFragment extends DialogFragmentBugfixed {
         return new PaginatedAdapter<Comment>(getActivity(), R.layout.uv_comment_item, new ArrayList<Comment>()) {
             @Override
             protected int getTotalNumberOfObjects() {
-                return suggestion.getNumberOfComments();
+                return suggestion != null ? suggestion.getNumberOfComments() : 0;
             }
 
             @Override
@@ -163,6 +167,10 @@ public class SuggestionDialogFragment extends DialogFragmentBugfixed {
         TextView responseStatus = (TextView) view.findViewById(R.id.uv_response_status);
         View responseDivider = view.findViewById(R.id.uv_response_divider);
         TextView title = (TextView) view.findViewById(R.id.uv_title);
+
+        if (suggestion == null) {
+            return;
+        }
 
         if (suggestion.isSubscribed()) {
             ((CheckBox) view.findViewById(R.id.uv_subscribe_checkbox)).setChecked(true);

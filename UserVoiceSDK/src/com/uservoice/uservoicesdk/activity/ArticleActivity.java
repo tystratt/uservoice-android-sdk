@@ -32,7 +32,10 @@ public class ArticleActivity extends SearchActivity {
 
         setContentView(R.layout.uv_article_layout);
         final Article article = getIntent().getParcelableExtra("article");
-        setTitle(article.getTitle());
+        final int articleId = article != null ? article.getId() : -1;
+        if (article != null) {
+            setTitle(article.getTitle());
+        }
         webView = (WebView) findViewById(R.id.uv_webview);
         final View helpfulSection = findViewById(R.id.uv_helpful_section);
         Utils.displayArticle(webView, article, this);
@@ -47,7 +50,7 @@ public class ArticleActivity extends SearchActivity {
         findViewById(R.id.uv_helpful_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Babayaga.track(ArticleActivity.this, Babayaga.Event.VOTE_ARTICLE, article.getId());
+                Babayaga.track(ArticleActivity.this, Babayaga.Event.VOTE_ARTICLE, articleId);
                 Toast.makeText(ArticleActivity.this, R.string.uv_thanks, Toast.LENGTH_SHORT).show();
             }
         });
@@ -59,7 +62,7 @@ public class ArticleActivity extends SearchActivity {
             }
         });
 
-        Babayaga.track(this, Babayaga.Event.VIEW_ARTICLE, article.getId());
+        Babayaga.track(this, Babayaga.Event.VIEW_ARTICLE, articleId);
     }
 
     @Override
