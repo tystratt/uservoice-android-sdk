@@ -2,6 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        google()
     }
 
     dependencies {
@@ -69,6 +70,6 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-    compile 'com.android.support:support-core-utils:26.1.0'
-    compile project(':UserVoiceSDK')
+    implementation 'com.android.support:support-core-utils:26.1.0'
+    implementation project(':UserVoiceSDK')
 }

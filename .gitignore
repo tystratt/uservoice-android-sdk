@@ -16,7 +16,3 @@ local.properties
 *.iws
 .idea/
 
-# Gradle stuff
-gradlew
-gradlew.bat
-gradle/
